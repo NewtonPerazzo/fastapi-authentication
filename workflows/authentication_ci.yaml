@@ -4,12 +4,12 @@ on:
   push:
     branches:
       - stage
-      - master
+      - main
 
   pull_request:
     branches:
       - stage
-      - master
+      - main
 
   workflow_dispatch: # button on GitHub Actions to trigger the workflow manually
 
@@ -70,7 +70,7 @@ jobs:
       - validate-python
       - build-image
 
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     permissions:
       contents: read
