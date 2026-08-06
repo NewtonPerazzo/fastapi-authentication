@@ -2,48 +2,34 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from app.exceptions.exceptions import (
-    CityNotFoundException,
-    ForecastDateUnavailableException,
-    InvalidWeatherProviderResponseException,
+    UserAlreadyExistsException,
+    UserNotFoundException,
 )
 
 
 def register_exception_handlers(app: FastAPI) -> None:
-    @app.exception_handler(CityNotFoundException)
-    async def city_not_found_handler(
+    @app.exception_handler(UserNotFoundException)
+    async def user_not_found_handler(
         request: Request,
-        exception: CityNotFoundException,
+        exception: UserNotFoundException,
     ) -> JSONResponse:
         return JSONResponse(
             status_code=404,
             content={
-                "error": "city_not_found",
+                "error": "user_not_found",
                 "message": str(exception),
             },
         )
 
-    @app.exception_handler(ForecastDateUnavailableException)
-    async def forecast_date_unavailable_handler(
+    @app.exception_handler(UserAlreadyExistsException)
+    async def user_already_exists_handler(
         request: Request,
-        exception: ForecastDateUnavailableException,
+        exception: UserAlreadyExistsException,
     ) -> JSONResponse:
         return JSONResponse(
-            status_code=422,
+            status_code=400,
             content={
-                "error": "forecast_date_unavailable",
-                "message": str(exception),
-            },
-        )
-
-    @app.exception_handler(InvalidWeatherProviderResponseException)
-    async def invalid_weather_provider_response_handler(
-        request: Request,
-        exception: InvalidWeatherProviderResponseException,
-    ) -> JSONResponse:
-        return JSONResponse(
-            status_code=502,
-            content={
-                "error": "invalid_weather_provider_response",
+                "error": "user_already_exists",
                 "message": str(exception),
             },
         )
