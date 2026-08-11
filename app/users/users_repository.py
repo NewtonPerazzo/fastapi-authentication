@@ -100,8 +100,8 @@ class UsersRepository():
         
 
     def delete(
-            self,  
-            user_id: str,
+        self,  
+        user_id: str,
     ) -> bool:
         with self.__connection_handler_factory() as db:
             try:

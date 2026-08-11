@@ -1,4 +1,7 @@
-from fastapi import APIRouter
+from typing import Annotated
+
+from fastapi import APIRouter, Depends
+from app.dependencies import get_current_user
 from app.users.users_service import users_service
 from app.users.users_model import (
     UserActivityModel,
@@ -11,6 +14,18 @@ users_router = APIRouter(
     prefix="/users",
     tags=["Users"]
 )
+
+@users_router.get(
+    "/me",
+    response_model=UsersModel,
+)
+def get_own_profile(
+    current_user: Annotated[
+        UsersModel,
+        Depends(get_current_user),
+    ],
+) -> UsersModel:
+    return current_user
 
 @users_router.get(
         "/{user_id}",
@@ -37,22 +52,28 @@ def post_user(
     response_model=UsersModel
 )
 def update_user(
-    user_id: str,
+    current_user: Annotated[
+        UsersModel,
+        Depends(get_current_user),
+    ],
     user_request: UsersUpdateModel,
 ):  
     response = users_service.update_user(
-        user_id=user_id,
+        user_id=current_user.id,
         user=user_request,
     )
     return response
 
 @users_router.delete(
-    "/{user_id}"
+    "/{user_id}",
 )
 def delete_user(
-    user_id: str,
+    current_user: Annotated[
+        UsersModel,
+        Depends(get_current_user),
+    ],
 ):  
-    response = users_service.delete_user(user_id=user_id)
+    response = users_service.delete_user(user_id=current_user.id)
     return response
 
 @users_router.patch(
@@ -60,11 +81,14 @@ def delete_user(
     response_model=UsersModel
 )
 def change_user_activity(
-    user_id: str,
+    current_user: Annotated[
+        UsersModel,
+        Depends(get_current_user),
+    ],
     activity: UserActivityModel,
 ):  
     response = users_service.change_user_activity(
-        user_id=user_id,
+        user_id=current_user.id,
         is_active=activity.is_active,
     )
     return response

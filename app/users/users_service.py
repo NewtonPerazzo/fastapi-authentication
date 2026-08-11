@@ -2,13 +2,14 @@ import re
 
 from pwdlib import PasswordHash
 
-from app.dependencies import get_connection_handler
+from config.db_dependencies import get_connection_handler
 from app.exceptions.exceptions import (
     UserAlreadyExistsException,
     UserNotFoundException,
 )
 from app.users.users_repository import UsersRepository
 from app.users.users_model import UsersModel, UsersRequestModel, UsersUpdateModel
+from datetime import datetime, timezone
 
 class UsersService():
     def __init__(self) -> None:
@@ -26,6 +27,15 @@ class UsersService():
             raise UserNotFoundException(user_id=str(user_id))
         return response
 
+    def get_user_by_email(
+            self,  
+            email: str,
+        ) -> UsersModel:
+        response = self._users_repository.select_by_email(email=email)
+        if response is None:
+            raise UserNotFoundException(user=str(email))
+        return response
+
     def post_user(
             self,  
             user: UsersRequestModel,
@@ -39,6 +49,30 @@ class UsersService():
             raise UserAlreadyExistsException(field="phone")
 
         response = self._users_repository.insert(user=user_normalized)
+        return response
+
+    def reset_password(
+        self,
+        user_id: str,
+        new_password: str,
+    ) -> UsersModel:
+        self.get_user(user_id=user_id)
+
+        now = datetime.now(timezone.utc)
+        user_data = {
+            "password_hash": self.get_hash_pass(new_password),
+            "updated_at": now,
+            "password_changed_at": now,
+        }
+
+        response = self._users_repository.update(
+            user_id=user_id,
+            user=user_data,
+        )
+
+        if response is None:
+            raise UserNotFoundException(user=user_id)
+
         return response
 
     def update_user(
