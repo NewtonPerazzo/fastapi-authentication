@@ -4,4 +4,7 @@ from config.db_connection import DBConnectionHandler
 settings = get_settings()
 
 def get_connection_handler() -> DBConnectionHandler:
-    return DBConnectionHandler(connection_string=settings.database_url)
+    return DBConnectionHandler(
+        connection_string=settings.database_url,
+        ssl_ca=settings.mysql_ssl_ca,
+    )
