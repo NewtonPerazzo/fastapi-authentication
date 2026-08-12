@@ -33,6 +33,10 @@ def get_own_profile(
     )
 def get_user(
     user_id: str,
+    current_user: Annotated[
+        UsersModel,
+        Depends(get_current_user),
+    ],
 ):  
     response = users_service.get_user(user_id=user_id)
     return response
