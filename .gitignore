@@ -153,6 +153,8 @@ activemq-data/
 .venv
 .env.prod
 .env.stage
+*.pem
+*.crt
 env/
 venv/
 ENV/

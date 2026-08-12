@@ -48,8 +48,9 @@ jobs:
       - name: Run tests
         env:
           DATABASE_URL: mysql+pymysql://ci_user:ci_password@localhost:3306/fastapi_authentication_test
+          JWT_SECRET_KEY: test-only-jwt-secret-never-used-outside-ci
           IMAGE_NAME: ghcr.io/newtonperazzo/fastapi-authentication
-        run: python -m pytest
+        run: python -m pytest tests
 
   build-image:
     name: Build Docker image
